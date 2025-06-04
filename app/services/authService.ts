@@ -118,3 +118,25 @@ export const isAuthenticated = async () => {
 export const getToken = async () => {
   return await SecureStore.getItemAsync(TOKEN_KEY);
 };
+
+// Get user type from secure storage
+export const getUserType = async () => {
+  try {
+    const userType = await SecureStore.getItemAsync('userType');
+    return userType as 'consumer' | 'salon' | null;
+  } catch (error) {
+    console.error('Error getting user type:', error);
+    return null;
+  }
+};
+
+// Set user type in secure storage
+export const setUserType = async (type: 'consumer' | 'salon') => {
+  try {
+    await SecureStore.setItemAsync('userType', type);
+    return true;
+  } catch (error) {
+    console.error('Error setting user type:', error);
+    return false;
+  }
+};

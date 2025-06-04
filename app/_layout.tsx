@@ -5,7 +5,7 @@ import { Stack, Redirect } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
-import { isAuthenticated } from './services/authService';
+import { isAuthenticated, getUserType } from './services/authService';
 
 import { useColorScheme } from '@/components/useColorScheme';
 
@@ -15,8 +15,8 @@ export {
 } from 'expo-router';
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  // Set initial route to auth flow
+  initialRouteName: '(auth)',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -28,8 +28,14 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
-  // State to track if user is authenticated
-  const [isUserAuthenticated, setIsUserAuthenticated] = useState<boolean | null>(null);
+  // State to track authentication status and user type
+  const [authState, setAuthState] = useState<{
+    isAuthenticated: boolean | null;
+    userType: 'consumer' | 'salon' | null;
+  }>({
+    isAuthenticated: null,
+    userType: null
+  });
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -43,31 +49,56 @@ export default function RootLayout() {
       // Check authentication status
       const checkAuth = async () => {
         const authenticated = await isAuthenticated();
-        setIsUserAuthenticated(authenticated);
+        const userType = authenticated ? await getUserType() : null;
+        
+        setAuthState({
+          isAuthenticated: authenticated,
+          userType: userType
+        });
       };
       
       checkAuth();
     }
   }, [loaded]);
 
-  if (!loaded || isUserAuthenticated === null) {
+  if (!loaded || authState.isAuthenticated === null) {
     return null;
   }
 
-  return <RootLayoutNav isAuthenticated={isUserAuthenticated} />;
+  // Create a new object with isAuthenticated as boolean (no longer null at this point)
+  const safeAuthState = {
+    isAuthenticated: Boolean(authState.isAuthenticated),
+    userType: authState.userType
+  };
+
+  return <RootLayoutNav authState={safeAuthState} />;
 }
 
-function RootLayoutNav({ isAuthenticated }: { isAuthenticated: boolean }) {
+function RootLayoutNav({ authState }: { authState: { isAuthenticated: boolean; userType: 'consumer' | 'salon' | null } }) {
   const colorScheme = useColorScheme();
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        {/* If not authenticated, redirect to auth flow */}
-        {!isAuthenticated && <Stack.Screen name="(auth)" options={{ headerShown: false }} />}
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="(consumerTabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(salonTabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="modal" options={{ presentation: 'modal', headerShown: true }} />
       </Stack>
+
+      {/* Redirect based on authentication state */}
+      {authState.isAuthenticated ? (
+        authState.userType === 'consumer' ? (
+          <Redirect href="/(consumerTabs)" />
+        ) : authState.userType === 'salon' ? (
+          <Redirect href="/salonTabs" />
+        ) : (
+          <Redirect href="/(auth)/login" />
+        )
+      ) : (
+        <Redirect href="/(auth)/login" />
+      )}
     </ThemeProvider>
   );
 }
