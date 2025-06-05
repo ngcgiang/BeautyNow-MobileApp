@@ -123,7 +123,7 @@ export const getToken = async () => {
 export const getUserType = async () => {
   try {
     const userType = await SecureStore.getItemAsync('userType');
-    return userType as 'consumer' | 'salon' | null;
+    return userType as 'user' | 'salon' | null;
   } catch (error) {
     console.error('Error getting user type:', error);
     return null;
@@ -131,7 +131,7 @@ export const getUserType = async () => {
 };
 
 // Set user type in secure storage
-export const setUserType = async (type: 'consumer' | 'salon') => {
+export const setUserType = async (type: 'user' | 'salon') => {
   try {
     await SecureStore.setItemAsync('userType', type);
     return true;

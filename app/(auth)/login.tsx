@@ -47,7 +47,7 @@ const ErrorMessage = ({ message, visible }: ErrorMessageProps) => {
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'consumer' | 'salon'>('consumer'); // Default role
+  const [role, setRole] = useState<'user' | 'salon'>('user'); // Default role
   const [isLoading, setIsLoading] = useState(false);
   
   // Error states
@@ -124,7 +124,7 @@ export default function LoginScreen() {
         }
         
         // Navigate to the appropriate screens based on user type
-        if (role === 'consumer') {
+        if (role === 'user') {
           router.replace('/(consumerTabs)');
         } else if (role === 'salon') {
           router.replace('/salonTabs');
@@ -215,17 +215,17 @@ export default function LoginScreen() {
         <TouchableOpacity
           style={[
             styles.userTypeButton,
-            role === 'consumer' ? styles.selectedType : {}
+            role === 'user' ? styles.selectedType : {}
           ]}
           onPress={() => {
-            setRole('consumer');
+            setRole('user');
             setGeneralError('');
           }}
         >
           <Text style={[
             styles.userTypeText,
-            role === 'consumer' ? styles.selectedTypeText : {}
-          ]}>Consumer</Text>
+            role === 'user' ? styles.selectedTypeText : {}
+          ]}>User</Text>
         </TouchableOpacity>
         
         <TouchableOpacity
