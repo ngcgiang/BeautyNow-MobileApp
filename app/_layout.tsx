@@ -31,7 +31,7 @@ export default function RootLayout() {
   // State to track authentication status and user type
   const [authState, setAuthState] = useState<{
     isAuthenticated: boolean | null;
-    userType: 'consumer' | 'salon' | null;
+    userType: 'user' | 'salon' | null;
   }>({
     isAuthenticated: null,
     userType: null
@@ -74,7 +74,7 @@ export default function RootLayout() {
   return <RootLayoutNav authState={safeAuthState} />;
 }
 
-function RootLayoutNav({ authState }: { authState: { isAuthenticated: boolean; userType: 'consumer' | 'salon' | null } }) {
+function RootLayoutNav({ authState }: { authState: { isAuthenticated: boolean; userType: 'user' | 'salon' | null } }) {
   const colorScheme = useColorScheme();
 
   return (
@@ -89,8 +89,8 @@ function RootLayoutNav({ authState }: { authState: { isAuthenticated: boolean; u
 
       {/* Redirect based on authentication state */}
       {authState.isAuthenticated ? (
-        authState.userType === 'consumer' ? (
-          <Redirect href="/(consumerTabs)" />
+        authState.userType === 'user' ? (
+          <Redirect href="/(user)/index" />
         ) : authState.userType === 'salon' ? (
           <Redirect href="/salonTabs" />
         ) : (
