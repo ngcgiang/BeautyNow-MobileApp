@@ -81,16 +81,15 @@ function RootLayoutNav({ authState }: { authState: { isAuthenticated: boolean; u
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(consumerTabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(salonTabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(user)" options={{ headerShown: false }} />
+        <Stack.Screen name="salonTabs" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', headerShown: true }} />
       </Stack>
 
       {/* Redirect based on authentication state */}
       {authState.isAuthenticated ? (
         authState.userType === 'user' ? (
-          <Redirect href="/(user)/index" />
+          <Redirect href="/(user)" />
         ) : authState.userType === 'salon' ? (
           <Redirect href="/salonTabs" />
         ) : (

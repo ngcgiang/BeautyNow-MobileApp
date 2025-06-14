@@ -125,7 +125,7 @@ export default function LoginScreen() {
         
         // Navigate to the appropriate screens based on user type
         if (role === 'user') {
-          router.replace('/(consumerTabs)');
+          router.replace('/(user)');
         } else if (role === 'salon') {
           router.replace('/salonTabs');
         } else {
